@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: kooloc-db
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+  backend:
+    image: maven:3.9.9-eclipse-temurin-21
+    container_name: kooloc-backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app           # mount your source code
+      - ~/.m2:/root/.m2          # optional: cache Maven dependencies
+    command: mvn clean compile spring-boot:run
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: mypassword
+    depends_on:
+      - postgres
+
