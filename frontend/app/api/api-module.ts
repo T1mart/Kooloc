@@ -1,25 +1,21 @@
 import ApiHttpClient from "./ApiHttpClient";
 import ApiHttpClientAuthenticated from "./ApiHttpClientAuthenticated";
 import SessionApi from "./session/SessionApi";
-
-// SessionService is now created and managed by the factory
 import SessionService from "@services/session/SessionService";
 
-interface ApiClients {
+interface Api {
   sessionApi: SessionApi;
 }
 
-export function createApiClients(): ApiClients {
-  const sessionService = new SessionService();
-
+export function createApplicationServices(): Api {
   const apiHttpClient = new ApiHttpClient();
+  const sessionApi = new SessionApi(apiHttpClient);
   const apiHttpClientAuthenticated = new ApiHttpClientAuthenticated(
-    sessionService,
-    apiHttpClient
+    apiHttpClient,
+    sessionService
   );
 
   return {
-    sessionApi: new SessionApi(apiHttpClient),
-    //Insert here new api
+    sessionApi,
   };
 }

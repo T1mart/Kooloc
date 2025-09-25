@@ -4,9 +4,9 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"],
-      "@api/*": ["./src/api/*"],
-      "@components/*": ["./src/components/*"],
-      "@services/*": ["./src/services/*"]
+      "@api/*": ["./app/api/*"],
+      "@components/*": ["./app/components/*"],
+      "@services/*": ["./app/services/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
