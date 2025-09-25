@@ -1,6 +1,5 @@
 import ApiHttpClient from "./ApiHttpClient";
 import SessionService from "@services/session/SessionService";
-import type { AxiosResponse } from "axios";
 
 export default class ApiHttpClientAuthenticated {
   constructor(
@@ -9,9 +8,8 @@ export default class ApiHttpClientAuthenticated {
   ) {}
 
   private configureHeaders(): { Authorization: string } {
-    const sessionToken = this.sessionService.getSessionToken().get();
+    const sessionToken = this.sessionService.getSessionToken();
     if (!sessionToken) {
-      // You can throw an error or handle this case as needed
       throw new Error("Session token not available for authenticated request");
     }
     return {
@@ -19,11 +17,7 @@ export default class ApiHttpClientAuthenticated {
     };
   }
 
-  rawRequest(
-    method: string,
-    path: string,
-    data?: any
-  ): Promise<AxiosResponse<any>> {
+  rawRequest(method: string, path: string, data?: any): Promise<Response> {
     const headers = this.configureHeaders();
     return this.httpClient.rawRequest(method, path, data, headers);
   }

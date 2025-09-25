@@ -1,14 +1,4 @@
-import axios from "axios";
-import type { AxiosInstance, AxiosResponse, AxiosRequestConfig } from "axios";
-
 const baseUrl: string = `${window.location.protocol}//${window.location.host}/api`;
-
-const api: AxiosInstance = axios.create({
-  baseURL: baseUrl,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
 
 export default class ApiHttpClient {
   rawRequest(
@@ -16,14 +6,17 @@ export default class ApiHttpClient {
     path: string,
     data?: any,
     headers?: Record<string, string>
-  ): Promise<AxiosResponse<any>> {
-    const config: AxiosRequestConfig = {
+  ): Promise<Response> {
+    const url = `${baseUrl}/${path}`;
+    const config: RequestInit = {
       method,
-      url: path,
-      data,
-      headers: { ...api.defaults.headers.common, ...headers },
+      headers: {
+        "Content-Type": "application/json",
+        ...headers,
+      },
+      body: data ? JSON.stringify(data) : undefined,
     };
-    return api.request(config);
+    return fetch(url, config);
   }
 
   restRequest<T>(
@@ -32,13 +25,13 @@ export default class ApiHttpClient {
     data?: any,
     headers?: Record<string, string>
   ): Promise<T> {
-    return api
-      .request<T>({
-        method,
-        url: path,
-        data,
-        headers: { ...api.defaults.headers.common, ...headers },
+    return this.rawRequest(method, path, data, headers)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
       })
-      .then((response) => response.data);
+      .then((json) => json as T);
   }
 }
