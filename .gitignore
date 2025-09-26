@@ -1,0 +1,8 @@
+# IDE
+.vscode
+.idea
+
+# Node modules
+node_modules/
+
+#db_data
