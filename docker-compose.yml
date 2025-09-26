@@ -8,6 +8,11 @@ services:
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
+    # Mount the init script so Postgres runs it at first startup
+    volumes:
+      - ./db/init/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - pgdata:/var/lib/postgresql/data  # persistent data
+  
   backend:
     image: maven:3.9.9-eclipse-temurin-21
     container_name: kooloc-backend
@@ -24,4 +29,19 @@ services:
       SPRING_DATASOURCE_PASSWORD: mypassword
     depends_on:
       - postgres
+  frontend:
+    image: node:20
+    container_name: kooloc-frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app      # Mount your Expo project
+      - /app/node_modules    # Keep node_modules inside container
+    command: sh -c "npm install && CI=1 npx expo start --lan"
+    ports:
+      - "19000:19000"  # Expo Metro bundler (HTTP)
+      - "19001:19001"  # WebSocket debugger
+      - "19002:19002"  # Expo developer tools UI
 
+# ✅ Define the named volume here
+volumes:
+  pgdata:
